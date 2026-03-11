@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GET 211 — Computing & Software Engineering | Study App</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+   ============================================================ */
+:root {
+  --bg:        #0b0f1a;
+  --surface:   #131929;
+  --card:      #1a2235;
+  --border:    #253352;
+  --accent:    #00d4ff;
+  --accent2:   #7c3aed;
+  --green:     #10d97e;
+  --red:       #ff4d6d;
+  --yellow:    #ffd166;
+  --text:      #e2e8f0;
+  --muted:     #8899aa;
+  --font-head: 'Syne', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --radius:    12px;
+  --glow:      0 0 24px rgba(0,212,255,0.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+section.page{display:none;animation:fadeIn .35s ease}
+section.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============================================================
+   NAV BAR
+   ============================================================ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  background:rgba(11,15,26,.92);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-family:var(--font-mono);
+  font-size:.85rem;
+  color:var(--accent);
+  letter-spacing:.05em;
+}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap}
+.nav-btn{
+  background:transparent;border:none;
+  color:var(--muted);
+  font-family:var(--font-body);font-size:.82rem;font-weight:500;
+  padding:6px 13px;border-radius:8px;cursor:pointer;
+  transition:all .2s;
+}
+.nav-btn:hover,.nav-btn.active{background:var(--card);color:var(--accent)}
+.nav-btn.quiz-nav{color:var(--yellow)}
+.nav-btn.quiz-nav.active,.nav-btn.quiz-nav:hover{background:rgba(255,209,102,.1);color:var(--yellow)}
+
+/* ============================================================
+   HOME PAGE
+   ============================================================ */
+#home{padding-top:80px;min-height:100vh}
+.hero{
+  text-align:center;
+  padding:80px 24px 60px;
+  position:relative;
+}
+.hero::before{
+  content:'';
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,212,255,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-block;
+  font-family:var(--font-mono);font-size:.78rem;
+  color:var(--accent);background:rgba(0,212,255,.08);
+  border:1px solid rgba(0,212,255,.25);
+  padding:5px 16px;border-radius:999px;
+  margin-bottom:24px;
+  letter-spacing:.08em;
+}
+.hero h1{
+  font-family:var(--font-head);font-size:clamp(2.2rem,5vw,3.8rem);
+  font-weight:800;line-height:1.1;
+  background:linear-gradient(135deg,#fff 30%,var(--accent) 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:20px;
+}
+.hero p{
+  font-size:1.05rem;color:var(--muted);max-width:620px;margin:0 auto 48px;
+}
+.hero-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;max-width:860px;margin:0 auto;
+}
+.hero-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 20px;
+  cursor:pointer;transition:all .25s;
+  text-align:left;
+  position:relative;overflow:hidden;
+}
+.hero-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 60%,rgba(0,212,255,.04));
+}
+.hero-card:hover{
+  border-color:var(--accent);transform:translateY(-4px);
+  box-shadow:var(--glow);
+}
+.hero-card .icon{font-size:1.8rem;margin-bottom:12px}
+.hero-card h3{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:6px}
+.hero-card p{font-size:.82rem;color:var(--muted)}
+.hero-card .arrow{
+  position:absolute;right:16px;top:16px;
+  color:var(--accent);opacity:0;font-size:.9rem;
+  transition:all .2s;
+}
+.hero-card:hover .arrow{opacity:1;transform:translateX(4px)}
+
+.stats-bar{
+  display:flex;justify-content:center;gap:40px;flex-wrap:wrap;
+  padding:40px 0;border-top:1px solid var(--border);
+  margin-top:60px;
+}
+.stat{text-align:center}
+.stat-num{
+  font-family:var(--font-head);font-size:2rem;font-weight:800;
+  color:var(--accent);display:block;
+}
+.stat-label{font-size:.8rem;color:var(--muted);font-family:var(--font-mono)}
+
+/* ============================================================
+   SECTION HEADER
+   ============================================================ */
+.section-header{
+  padding:90px 0 40px;
+}
+.section-tag{
+  font-family:var(--font-mono);font-size:.75rem;
+  color:var(--accent);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:10px;display:block;
+}
+.section-header h2{
+  font-family:var(--font-head);font-size:clamp(1.8rem,3.5vw,2.8rem);
+  font-weight:800;
+  background:linear-gradient(135deg,#fff,var(--muted));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-header p{color:var(--muted);max-width:600px;margin-top:10px}
+
+/* ============================================================
+   TOPIC SEARCH
+   ============================================================ */
+.search-bar{
+  position:relative;margin-bottom:32px;
+}
+.search-bar input{
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 20px 14px 48px;
+  color:var(--text);font-size:.95rem;font-family:var(--font-body);
+  outline:none;transition:border-color .2s;
+}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar input::placeholder{color:var(--muted)}
+.search-bar .search-icon{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:1rem;
+}
+
+/* ============================================================
+   TOPIC CARDS (NOTES)
+   ============================================================ */
+.topics-grid{display:grid;gap:20px}
+.topic-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:border-color .2s;
+}
+.topic-card:hover{border-color:rgba(0,212,255,.35)}
+.topic-header{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 24px;cursor:pointer;
+  user-select:none;
+}
+.topic-icon{
+  width:42px;height:42px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+}
+.topic-title{
+  font-family:var(--font-head);font-weight:700;font-size:1.05rem;
+  flex:1;
+}
+.topic-toggle{
+  color:var(--muted);font-size:.9rem;
+  transition:transform .3s;
+}
+.topic-card.open .topic-toggle{transform:rotate(180deg)}
+.topic-body{
+  display:none;padding:0 24px 24px;
+  border-top:1px solid var(--border);
+}
+.topic-card.open .topic-body{display:block;animation:fadeIn .3s ease}
+.topic-body h4{
+  font-family:var(--font-head);font-size:.9rem;font-weight:700;
+  color:var(--accent);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.06em;
+}
+.topic-body p{color:var(--muted);font-size:.92rem;margin-bottom:10px}
+.key-points{list-style:none;display:flex;flex-direction:column;gap:6px}
+.key-points li{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:.9rem;color:var(--text);
+}
+.key-points li::before{
+  content:'▸';color:var(--accent);flex-shrink:0;margin-top:1px;
+}
+.example-box{
+  background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);
+  border-radius:8px;padding:14px 18px;margin-top:12px;
+  font-family:var(--font-mono);font-size:.82rem;
+  color:var(--accent);line-height:1.8;
+  white-space:pre-wrap;
+}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tag{
+  font-size:.73rem;font-family:var(--font-mono);
+  padding:3px 10px;border-radius:999px;
+  background:rgba(124,58,237,.15);color:#a78bfa;
+  border:1px solid rgba(124,58,237,.25);
+}
+
+/* ============================================================
+   REVISION CARDS
+   ============================================================ */
+.cards-filter{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;
+}
+.filter-btn{
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);padding:7px 16px;border-radius:999px;
+  font-size:.82rem;cursor:pointer;transition:all .2s;
+  font-family:var(--font-body);
+}
+.filter-btn.active,.filter-btn:hover{
+  background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent);
+}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.rev-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:all .25s;
+}
+.rev-card:hover{border-color:rgba(0,212,255,.4);transform:translateY(-2px);box-shadow:var(--glow)}
+.rev-card-header{
+  padding:16px 18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.rev-card-title{font-weight:600;font-size:.93rem}
+.rev-cat-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.rev-card-body{
+  display:none;padding:0 18px 16px;
+}
+.rev-card.open .rev-card-body{display:block;animation:fadeIn .25s ease}
+.rev-card-body p{font-size:.87rem;color:var(--muted);margin-bottom:10px}
+.takeaway{
+  background:rgba(16,217,126,.06);border-left:3px solid var(--green);
+  padding:10px 14px;border-radius:0 8px 8px 0;
+  font-size:.85rem;color:var(--green);
+}
+.rev-toggle{color:var(--muted);font-size:.8rem;transition:transform .3s}
+.rev-card.open .rev-toggle{transform:rotate(180deg)}
+
+/* ============================================================
+   QUIZ SECTION
+   ============================================================ */
+#quiz-start{text-align:center;padding:60px 0}
+.quiz-info-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:16px;max-width:600px;margin:0 auto 40px;
+}
+.quiz-info-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;text-align:center;
+}
+.quiz-info-card .num{
+  font-family:var(--font-head);font-size:2rem;font-weight:800;color:var(--accent);
+}
+.quiz-info-card .lbl{font-size:.8rem;color:var(--muted);margin-top:4px}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--accent),#0099cc);
+  color:#000;font-weight:700;font-size:1rem;
+  padding:14px 36px;border-radius:var(--radius);border:none;
+  cursor:pointer;transition:all .25s;
+  font-family:var(--font-body);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,212,255,.3)}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--card);color:var(--text);
+  border:1px solid var(--border);font-weight:500;
+  padding:11px 24px;border-radius:var(--radius);
+  cursor:pointer;transition:all .2s;font-size:.9rem;
+  font-family:var(--font-body);
+}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+
+/* QUIZ ENGINE */
+#quiz-engine{display:none}
+.quiz-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;flex-wrap:wrap;gap:12px;
+}
+.quiz-progress-text{font-family:var(--font-mono);font-size:.85rem;color:var(--muted)}
+.timer{
+  font-family:var(--font-mono);font-size:1rem;font-weight:700;
+  color:var(--accent);background:rgba(0,212,255,.08);
+  padding:6px 16px;border-radius:8px;border:1px solid rgba(0,212,255,.2);
+}
+.timer.warning{color:var(--red);border-color:rgba(255,77,109,.3);background:rgba(255,77,109,.08)}
+.progress-bar-outer{
+  height:4px;background:var(--border);border-radius:2px;
+  margin-bottom:32px;
+}
+.progress-bar-inner{
+  height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  border-radius:2px;transition:width .4s ease;
+}
+.question-box{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:32px;margin-bottom:24px;
+}
+.q-num{
+  font-family:var(--font-mono);font-size:.75rem;color:var(--accent);
+  letter-spacing:.1em;margin-bottom:14px;
+}
+.q-text{font-size:1.05rem;font-weight:500;line-height:1.6;margin-bottom:24px}
+.options{display:flex;flex-direction:column;gap:10px}
+.option{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:10px;padding:14px 18px;cursor:pointer;
+  transition:all .2s;font-size:.93rem;
+}
+.option:hover:not(.locked){background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.4)}
+.option.selected{background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent)}
+.option.correct{background:rgba(16,217,126,.1);border-color:var(--green);color:var(--green)}
+.option.wrong{background:rgba(255,77,109,.08);border-color:var(--red);color:var(--red)}
+.opt-letter{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--border);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:.8rem;font-weight:700;flex-shrink:0;
+}
+.option.selected .opt-letter{background:var(--accent);color:#000}
+.option.correct .opt-letter{background:var(--green);color:#000}
+.option.wrong .opt-letter{background:var(--red);color:#fff}
+.quiz-nav{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.btn-submit-quiz{
+  background:linear-gradient(135deg,var(--green),#059652);
+  color:#000;font-weight:700;padding:12px 28px;
+  border-radius:var(--radius);border:none;cursor:pointer;
+  font-family:var(--font-body);font-size:.95rem;
+  transition:all .2s;
+}
+.btn-submit-quiz:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(16,217,126,.3)}
+
+/* RESULTS */
+#quiz-results{display:none}
+.results-hero{
+  text-align:center;padding:60px 24px 40px;
+}
+.score-ring{
+  width:160px;height:160px;border-radius:50%;
+  background:conic-gradient(var(--accent) var(--pct),var(--border) 0);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+  position:relative;
+}
+.score-ring::before{
+  content:'';position:absolute;
+  width:130px;height:130px;border-radius:50%;
+  background:var(--bg);
+}
+.score-inner{
+  position:relative;z-index:1;text-align:center;
+}
+.score-num{
+  font-family:var(--font-head);font-size:2rem;font-weight:800;
+  color:var(--accent);display:block;
+}
+.score-denom{font-size:.85rem;color:var(--muted);font-family:var(--font-mono)}
+.perf-badge{
+  display:inline-block;padding:8px 24px;border-radius:999px;
+  font-weight:700;font-size:1rem;margin-bottom:30px;
+}
+.results-review{display:flex;flex-direction:column;gap:16px;margin-bottom:48px}
+.result-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px 22px;
+}
+.result-item .r-q{font-weight:500;margin-bottom:12px;font-size:.93rem}
+.result-item .r-answer-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.r-chip{
+  font-size:.8rem;padding:4px 12px;border-radius:6px;
+  font-family:var(--font-mono);
+}
+.r-chip.user-wrong{background:rgba(255,77,109,.12);color:var(--red);border:1px solid rgba(255,77,109,.3)}
+.r-chip.user-right{background:rgba(16,217,126,.12);color:var(--green);border:1px solid rgba(16,217,126,.3)}
+.r-chip.correct-ans{background:rgba(16,217,126,.12);color:var(--green);border:1px solid rgba(16,217,126,.3)}
+.r-explanation{
+  font-size:.85rem;color:var(--muted);
+  background:var(--surface);border-radius:8px;padding:10px 14px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:640px){
+  #navbar{padding:0 12px}
+  .nav-links{gap:2px}
+  .nav-btn{padding:5px 8px;font-size:.75rem}
+  .hero{padding:60px 16px 40px}
+  .question-box{padding:20px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION BAR
+     ============================================================ -->
+<nav id="navbar">
+  <div class="nav-logo">GET&nbsp;211</div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('home')">🏠 Home</button>
+    <button class="nav-btn" onclick="showPage('notes')">📖 Notes</button>
+    <button class="nav-btn" onclick="showPage('cards')">🗃 Cards</button>
+    <button class="nav-btn quiz-nav" onclick="showPage('quiz')">⚡ Quiz</button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HOME PAGE
+     ============================================================ -->
+<section id="home" class="page active">
+  <div class="container">
+    <div class="hero">
+      <span class="hero-badge">📡 GET 211 · University Study App</span>
+      <h1>Computing &amp;<br>Software Engineering</h1>
+      <p>Your complete interactive study companion for GET 211. Master every topic — from CPU organization to IoT — through notes, revision cards, and a smart quiz engine.</p>
+      <div class="hero-grid">
+        <div class="hero-card" onclick="showPage('notes')">
+          <div class="icon">📚</div>
+          <h3>Key Concept Notes</h3>
+          <p>Detailed, beginner-friendly explanations for every topic</p>
+          <span class="arrow">→</span>
+        </div>
+        <div class="hero-card" onclick="showPage('cards')">
+          <div class="icon">🗂️</div>
+          <h3>Revision Cards</h3>
+          <p>Collapsible concept cards for quick last-minute review</p>
+          <span class="arrow">→</span>
+        </div>
+        <div class="hero-card" onclick="showPage('quiz')">
+          <div class="icon">⚡</div>
+          <h3>Quiz Mode</h3>
+          <p>100-question bank · 30 random questions per attempt</p>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat"><span class="stat-num">15</span><span class="stat-label">Course Topics</span></div>
+        <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Revision Cards</span></div>
+        <div class="stat"><span class="stat-num">100</span><span class="stat-label">Quiz Questions</span></div>
+        <div class="stat"><span class="stat-num">30</span><span class="stat-label">Questions / Quiz</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 1 — KEY CONCEPT NOTES
+     ============================================================ -->
+<section id="notes" class="page">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">// section 01</span>
+      <h2>Key Concept Notes</h2>
+      <p>Tap any topic to expand full notes, key points, and examples.</p>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="noteSearch" placeholder="Search topics…" oninput="filterNotes()">
+    </div>
+    <div class="topics-grid" id="topicsGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2 — REVISION CARDS
+     ============================================================ -->
+<section id="cards" class="page">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">// section 02</span>
+      <h2>Quick Revision Cards</h2>
+      <p>Click any card to reveal the explanation and key takeaway.</p>
+    </div>
+    <div class="cards-filter" id="catFilter"></div>
+    <div class="rev-grid" id="revGrid"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 3/4 — QUIZ
+     ============================================================ -->
+<section id="quiz" class="page">
+  <div class="container">
+    <!-- START SCREEN -->
+    <div id="quiz-start">
+      <div class="section-header" style="padding-top:70px;text-align:center">
+        <span class="section-tag" style="display:block;text-align:center">// section 03</span>
+        <h2>Quiz Mode</h2>
+        <p style="margin:10px auto">Test your knowledge with randomly selected questions from the full 100-question bank.</p>
+      </div>
+      <div class="quiz-info-grid">
+        <div class="quiz-info-card"><div class="num">100</div><div class="lbl">Total Questions</div></div>
+        <div class="quiz-info-card"><div class="num">30</div><div class="lbl">Per Attempt</div></div>
+        <div class="quiz-info-card"><div class="num">⏱</div><div class="lbl">20 Min Timer</div></div>
+        <div class="quiz-info-card"><div class="num">✓</div><div class="lbl">Instant Review</div></div>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">🚀 Start Quiz</button>
+    </div>
+
+    <!-- ENGINE -->
+    <div id="quiz-engine">
+      <div style="padding-top:80px">
+        <div class="quiz-top">
+          <span class="quiz-progress-text" id="qProgressText">Question 1 of 30</span>
+          <span class="timer" id="timerDisplay">20:00</span>
+        </div>
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" id="progressBar" style="width:3.33%"></div>
+        </div>
+        <div class="question-box">
+          <div class="q-num" id="qNum">Q1 / 30</div>
+          <div class="q-text" id="qText"></div>
+          <div class="options" id="optionsContainer"></div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-secondary" id="prevBtn" onclick="prevQuestion()">← Previous</button>
+          <button class="btn-secondary" id="nextBtn" onclick="nextQuestion()">Next →</button>
+          <button class="btn-submit-quiz" onclick="confirmSubmit()">Submit Quiz ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="quiz-results">
+      <div class="results-hero">
+        <div class="score-ring" id="scoreRing">
+          <div class="score-inner">
+            <span class="score-num" id="scoreNum"></span>
+            <span class="score-denom" id="scoreDenom"></span>
+          </div>
+        </div>
+        <div class="perf-badge" id="perfBadge"></div>
+        <p id="perfMsg" style="color:var(--muted);max-width:500px;margin:0 auto 36px"></p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-primary" onclick="startQuiz()">🔄 Retry Quiz</button>
+          <button class="btn-secondary" onclick="showPage('notes')">📖 Review Notes</button>
+        </div>
+      </div>
+      <div class="results-review" id="resultsReview"></div>
+      <div style="text-align:center;padding:20px 0 60px">
+        <button class="btn-primary" onclick="startQuiz()">🔄 Try Again</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ============================================================
+   PAGE NAVIGATION
+   ============================================================ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const map = {home:0, notes:1, cards:2, quiz:3};
+  document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   TOPIC NOTES DATA
+   ============================================================ */
+const topics = [
+  {
+    icon:'🖥️', color:'#00d4ff', title:'Introduction to Computers & Computing',
+    explanation:`A computer is an electronic machine that processes data to produce meaningful information. 
+Computing is the process of using computer technology to complete a given goal — it involves designing, developing, and applying algorithms, software, and hardware to process, store, and communicate data efficiently.`,
+    points:[
+      'A computer processes data through its CPU (Central Processing Unit).',
+      'The five major functional units are: Input, Output, Memory, ALU, and Control Unit.',
+      'Computer Architecture focuses on system design; Computer Organization focuses on internal workings.',
+      'Types of computing include: Personal, Enterprise, Cloud, and Supercomputing.',
+      'Applications span Healthcare, Finance, Education, Communication, Engineering, and more.',
+    ],
+    example:`Components of a Computer System:
+• CPU — Processes instructions (contains ALU + Control Unit)
+• Memory — Stores programs and data (RAM, ROM)
+• Input Device — Keyboard, mouse, sensors
+• Output Device — Monitor, printer, speakers
+• Storage — Hard disk, SSD, USB drives`,
+    tags:['Computers','CPU','Computing','Fundamentals']
+  },
+  {
+    icon:'⚙️', color:'#7c3aed', title:'Computer Organization & Data Processing',
+    explanation:`Computer Organization describes how the hardware components of a computer are internally structured and interconnected. Data Processing is the manipulation of raw data into meaningful information through arithmetic and logical operations by the CPU.`,
+    points:[
+      'CPU = ALU + Control Unit + Registers.',
+      'ALU performs arithmetic (ADD, SUB, MUL, DIV) and logical (AND, OR, NOT, XOR) operations.',
+      'Control Unit (CU) acts as the manager — it fetches, decodes, and coordinates instruction execution.',
+      'Registers are tiny, ultra-fast storage inside the CPU (faster than RAM or cache).',
+      'Instruction Cycle: Fetch → Decode → Execute → Store.',
+      'Shift operations provide fast multiplication/division by powers of 2.',
+      'Comparison operations (==, !=, >, <) drive decision-making in programs.',
+    ],
+    example:`Instruction Cycle:
+Step 1 FETCH   — PC holds address → instruction fetched from RAM
+Step 2 DECODE  — Control Unit decodes the instruction
+Step 3 EXECUTE — ALU performs the operation
+Step 4 STORE   — Result stored in register or memory`,
+    tags:['CPU','ALU','CU','Instruction Cycle','Data Processing']
+  },
+  {
+    icon:'🧠', color:'#10d97e', title:'Memory Organization',
+    explanation:`Memory stores instructions, data, and intermediate results. Every memory location has a unique address. Memory is organized in a hierarchy based on speed, capacity, and cost — the faster the memory, the smaller and more expensive it is.`,
+    points:[
+      'Primary Memory: RAM (volatile, loses data on power-off) and ROM (non-volatile, permanent).',
+      'Secondary Memory: Hard Disk, SSD, Flash Drive — large but slower.',
+      'Cache Memory: Ultra-fast memory between CPU and RAM. Levels: L1 (fastest), L2, L3.',
+      'Virtual Memory: Uses disk space as extended RAM (slowest).',
+      'Address space formula: With n address lines → 2ⁿ memory locations.',
+      'Memory Hierarchy (top to bottom): Registers → Cache → RAM → SSD → HDD → Cloud.',
+    ],
+    example:`Address Space Calculation:
+If a system has 16 address lines:
+  Max locations = 2¹⁶ = 65,536 memory locations
+
+If a system has 32 address lines:
+  Max locations = 2³² = 4,294,967,296 (~4 GB)`,
+    tags:['RAM','ROM','Cache','Memory Hierarchy','Address Space']
+  },
+  {
+    icon:'📋', color:'#ffd166', title:'Registers & Addressing Schemes',
+    explanation:`Registers are small, high-speed storage units inside the CPU used during data processing. They are faster than cache and RAM. Addressing Modes define how an instruction locates its operand (data).`,
+    points:[
+      'PC (Program Counter) — holds address of the NEXT instruction to execute.',
+      'IR (Instruction Register) — holds the CURRENT instruction being executed.',
+      'MAR (Memory Address Register) — holds the address of a memory location.',
+      'MDR (Memory Data Register) — holds data being read from or written to memory.',
+      'ACC (Accumulator) — stores intermediate arithmetic results.',
+      'SP (Stack Pointer) — points to the top of the stack.',
+      'Flag/Status Register — contains bits indicating results (zero, carry, overflow, sign).',
+    ],
+    example:`8 Addressing Modes:
+1. Immediate  → MOV R1, #10    (value IS the operand)
+2. Direct     → MOV R1, 5000   (EA = 5000, go to memory)
+3. Indirect   → MOV R1, (R2)   (EA = contents of R2)
+4. Register   → ADD R1, R2     (operand in register)
+5. Reg.Indir. → MOV R1, (R2)   (addr stored in R2)
+6. Indexed    → MOV R1,1000(R2) (EA = R2 + 1000)
+7. Relative   → EA = PC + Offset
+8. Stack      → PUSH R1 / POP R1`,
+    tags:['Registers','PC','MAR','MDR','Addressing Modes','Assembly']
+  },
+  {
+    icon:'🔢', color:'#ff4d6d', title:'Boolean Algebra & Number Systems',
+    explanation:`Boolean Algebra is the mathematical foundation of digital logic, working with binary values: TRUE (1) and FALSE (0). Computers represent all data in binary — even text, images, and audio are stored as sequences of 0s and 1s.`,
+    points:[
+      'Boolean operators: AND (·), OR (+), NOT (¬ or \')',
+      'Truth tables define the output of every possible input combination.',
+      'De Morgan\'s Law: ¬(A·B) = ¬A + ¬B and ¬(A+B) = ¬A · ¬B',
+      'Number bases: Binary (2), Octal (8), Decimal (10), Hexadecimal (16).',
+      'Binary to Decimal: multiply each bit by 2ⁿ and sum.',
+      'Floating-point numbers follow IEEE 754 standard (sign, exponent, mantissa).',
+      'Non-numeric info (text) is encoded using ASCII or Unicode.',
+    ],
+    example:`Boolean AND Truth Table:
+A | B | A AND B
+0 | 0 |   0
+0 | 1 |   0
+1 | 0 |   0
+1 | 1 |   1
+
+Binary → Decimal: 1011₂
+= 1×2³ + 0×2² + 1×2¹ + 1×2⁰
+= 8 + 0 + 2 + 1 = 11₁₀`,
+    tags:['Boolean Algebra','Binary','Number Systems','Logic Gates','ASCII']
+  },
+  {
+    icon:'🔄', color:'#00d4ff', title:'Problem Solving & Algorithm Development',
+    explanation:`Problem solving in computing involves breaking down a problem into logical steps and expressing them as an algorithm — a precise, finite set of instructions that leads to a solution. Good algorithms are clear, correct, efficient, and finite.`,
+    points:[
+      'Algorithm properties: Input, Output, Definiteness, Finiteness, Effectiveness.',
+      'Problem-solving steps: Understand → Plan → Design Algorithm → Code → Test → Debug.',
+      'Time complexity measures how fast an algorithm runs as input grows.',
+      'Space complexity measures how much memory an algorithm uses.',
+      'Big O notation: O(1) constant, O(n) linear, O(n²) quadratic, O(log n) logarithmic.',
+      'Data structures store data; algorithms manipulate data — they are inseparable.',
+    ],
+    example:`Algorithm: Find Largest of Three Numbers
+BEGIN
+  INPUT A, B, C
+  IF A > B AND A > C THEN
+    PRINT "A is the largest"
+  ELSE IF B > A AND B > C THEN
+    PRINT "B is the largest"
+  ELSE
+    PRINT "C is the largest"
+  ENDIF
+END`,
+    tags:['Algorithm','Problem Solving','Pseudocode','Big O']
+  },
+  {
+    icon:'📊', color:'#7c3aed', title:'Flowcharts, Pseudocode & UML',
+    explanation:`Solution design tools help plan software BEFORE writing code. They reduce errors, improve clarity, and ensure requirements are met. The three main tools are: Flowcharts (visual), Pseudocode (structured English), and UML (standardized diagrams).`,
+    points:[
+      'Flowchart symbols: Oval=Start/End, Rectangle=Process, Diamond=Decision, Parallelogram=I/O.',
+      'Pseudocode uses natural language + programming logic — no strict syntax.',
+      'UML (Unified Modeling Language) was standardized by ISO in 2005.',
+      'Behavioral UML diagrams show DYNAMIC behavior: Use Case, Sequence, Activity, State Machine.',
+      'Structural UML diagrams show STATIC structure: Class, Package, Component, Object diagrams.',
+      'Use Case diagram: Actors (stick figures) + Use Cases (ovals) + System Boundary (rectangle).',
+      'Class diagram: Shows classes with attributes (+public, -private) and inheritance.',
+      '<<include>> = mandatory dependency; <<extend>> = optional dependency.',
+    ],
+    example:`Pseudocode: Check Even or Odd
+BEGIN
+  INPUT number
+  IF number MOD 2 == 0 THEN
+    PRINT "Even Number"
+  ELSE
+    PRINT "Odd Number"
+  ENDIF
+END
+
+Sequence Diagram key notations:
+• Lifeline = individual participant
+• Activation = thin rectangle on lifeline
+• Call Message = solid arrow (invoking operation)
+• Return Message = dashed arrow (returning value)`,
+    tags:['Flowchart','Pseudocode','UML','Use Case','Class Diagram','Sequence Diagram']
+  },
+  {
+    icon:'💾', color:'#10d97e', title:'Data Models & Data Structures',
+    explanation:`A data model is an abstract representation of how data is organized and accessed. Data structures are ways to organize and store data in memory so it can be used efficiently. Choosing the right data structure is critical to building efficient programs.`,
+    points:[
+      'Arrays: Fixed-size collection of elements of the same type, accessed by index.',
+      'Linked Lists: Nodes linked by pointers — efficient for insertion/deletion.',
+      'Stacks: LIFO (Last In First Out) — operations: PUSH and POP.',
+      'Queues: FIFO (First In First Out) — operations: ENQUEUE and DEQUEUE.',
+      'Trees: Hierarchical structure — Binary Search Tree allows O(log n) search.',
+      'Graphs: Nodes connected by edges — used in networks, maps, social media.',
+      'Hash Tables: Key-value pairs with O(1) average access time.',
+      'Relational model: Data stored in tables with rows and columns (SQL).',
+    ],
+    example:`Stack operations (LIFO):
+PUSH 10 → [10]
+PUSH 20 → [10, 20]
+PUSH 30 → [10, 20, 30]
+POP     → returns 30 → [10, 20]
+
+Array indexing:
+arr = [5, 10, 15, 20]
+arr[0] = 5, arr[2] = 15`,
+    tags:['Arrays','Stacks','Queues','Linked List','Trees','Data Structures']
+  },
+  {
+    icon:'🖥️', color:'#ffd166', title:'Computer Software & Operating Systems',
+    explanation:`Software is a collection of programs that instructs the hardware. An Operating System (OS) is the most critical software — it acts as an intermediary between users and hardware, managing all system resources.`,
+    points:[
+      'Types of software: System software (OS, drivers), Application software (Word, browsers), Programming software.',
+      'OS core functions: Process management, Memory management, File system management, Device management, Security.',
+      'Kernel = core of the OS; interacts directly with hardware in privileged (kernel) mode.',
+      'Types of kernels: Monolithic (all in one block), Microkernel (minimal core), Hybrid (combination).',
+      'Types of OS: Batch, Time-Sharing, Real-Time (RTOS), Distributed, Network, Mobile.',
+      'Process management handles multitasking, process synchronization, and inter-process communication.',
+      'Memory management: allocation, paging, segmentation, virtual memory.',
+      'Examples: Linux (monolithic), Windows (hybrid kernel), macOS, Android (Linux-based).',
+    ],
+    example:`OS Layer Model:
+┌─────────────────────────┐
+│    User Applications    │
+├─────────────────────────┤
+│    System Libraries     │
+├─────────────────────────┤
+│      OS Kernel          │
+│  (Process | Memory |    │
+│   File | Device Mgmt)   │
+├─────────────────────────┤
+│      Hardware           │
+└─────────────────────────┘`,
+    tags:['Operating System','Kernel','Process Management','Memory Management','OS Types']
+  },
+  {
+    icon:'🔧', color:'#ff4d6d', title:'Elements of Software Engineering',
+    explanation:`Software Engineering is a structured, disciplined approach to developing, operating, and maintaining software. It applies engineering principles to software creation to ensure it is reliable, efficient, maintainable, and scalable.`,
+    points:[
+      'SDLC phases: Requirement Analysis → Design → Implementation → Testing → Deployment → Maintenance.',
+      'Waterfall Model: Sequential, each phase completes before the next begins.',
+      'Agile: Iterative sprints, continuous feedback, flexible to change.',
+      'DevOps: Combines development + operations for continuous delivery.',
+      'Design principles: Modularity, Abstraction, Encapsulation, Separation of Concerns.',
+      'Software architectures: Monolithic, Microservices, Client-Server.',
+      'Testing types: Unit, Integration, System, User Acceptance Testing (UAT).',
+      'Maintenance types: Corrective (bug fixes), Adaptive (new tech), Perfective (enhancements).',
+      'Software Security: Authentication, Authorization, Encryption, Vulnerability Testing.',
+      'Version control: Git tracks code changes; essential for team development.',
+    ],
+    example:`SDLC Waterfall Model:
+Requirements Analysis
+       ↓
+  System Design
+       ↓
+  Implementation (Coding)
+       ↓
+  Testing & QA
+       ↓
+  Deployment
+       ↓
+  Maintenance`,
+    tags:['SDLC','Agile','Waterfall','Testing','Software Design','DevOps','Git']
+  },
+  {
+    icon:'📐', color:'#00d4ff', title:'Programming Concepts & OOP',
+    explanation:`Programs are sequences of instructions that a computer executes. Object-Oriented Programming (OOP) organizes software around objects — entities that combine data (attributes) and behaviour (methods). OOP makes software more reusable, modular, and easier to maintain.`,
+    points:[
+      'Four OOP pillars: Encapsulation, Inheritance, Polymorphism, Abstraction.',
+      'Class = blueprint/template; Object = instance of a class.',
+      'Encapsulation: Bundling data and methods; using access modifiers (public +, private -).',
+      'Inheritance: A subclass inherits attributes and methods from a superclass (generalization).',
+      'Polymorphism: One interface, many implementations (method overriding/overloading).',
+      'Abstraction: Hiding internal details; exposing only necessary interfaces.',
+      'Structured programming: Uses sequences, selection (if/else), and iteration (loops).',
+      'Visual programming: Building programs through drag-and-drop visual interfaces (e.g., Scratch).',
+      'Operator precedence: Brackets > Exponents > Multiplication/Division > Addition/Subtraction (BEDMAS).',
+    ],
+    example:`Class Diagram Example (UML):
+Animal (Superclass)
+  +age: Int
+  +gender: String
+  +isMammal()
+  +mate()
+    ↑ inherits ↑
+  Duck          Fish         Zebra
+  +beakColor    -sizeInFt    +is_wild
+  +swim()       -canEat      +run()
+  +quack()      -swim()`,
+    tags:['OOP','Classes','Inheritance','Encapsulation','Polymorphism','Structured']
+  },
+  {
+    icon:'🔬', color:'#7c3aed', title:'MATLAB in Engineering',
+    explanation:`MATLAB (Matrix Laboratory) is a high-level programming language and interactive computing environment by MathWorks. It is matrix-based, meaning all data is treated as arrays/matrices, making it ideal for mathematical and engineering applications.`,
+    points:[
+      'MATLAB environment: Command Window, Script Editor, Workspace, Command History, Current Folder.',
+      'MATLAB performs algebraic, matrix, calculus, differential equations, and numerical analysis.',
+      'Electrical Engineering: Circuit analysis, signal processing, control systems, power systems.',
+      'Mechanical Engineering: Vibration analysis, thermodynamics, fluid mechanics, FEA.',
+      'Civil Engineering: Structural analysis, optimization, traffic modeling, hydrology.',
+      'Computer Engineering: Algorithm development, image processing, AI, machine learning.',
+      'Simulink: Graphical simulation tool integrated with MATLAB for real-world system modeling.',
+      'MATLAB toolboxes: Control System, Signal Processing, Image Processing, Neural Network, Statistics.',
+      'Advantages: User-friendly, extensive libraries, strong visualization, industry acceptance.',
+      'Limitations: Requires paid license, slower than C/C++, high memory usage.',
+    ],
+    example:`MATLAB Matrix Operations:
+A = [1 2; 3 4];
+B = [5 6; 7 8];
+C = A * B       % Matrix multiplication
+
+Solving Linear Systems:
+A = [3 2; 1 4];
+b = [5; 6];
+x = A\\b         % Solves Ax = b`,
+    tags:['MATLAB','Matrix','Simulink','Engineering','Toolboxes','Numerical Methods']
+  },
+  {
+    icon:'🌐', color:'#10d97e', title:'ICT Fundamentals',
+    explanation:`ICT (Information and Communication Technology) refers to technologies used to collect, process, store, transmit, share and manage communication. It combines computing technology with telecommunication systems, enabling the digital world we live in.`,
+    points:[
+      'Five components of ICT: Hardware, Software, Data, Networks, People.',
+      'Network types: LAN (Local), MAN (Metropolitan), WAN (Wide Area), Internet (Global).',
+      'The Internet uses the TCP/IP protocol; key concepts: IP Address, DNS, HTTP/HTTPS, Web Browser.',
+      'Data = raw facts; Information = processed and meaningful data.',
+      'Cybersecurity threats: Malware, Phishing, Ransomware, Hacking.',
+      'Security measures: Firewalls, Antivirus software, Encryption, Authentication.',
+      'ICT applications: E-learning, online banking, electronic health records, e-governance, automation.',
+      'Digital Divide: Unequal access to ICT resources between different regions/groups.',
+      'Computing vs ICT: Computing focuses on processing; ICT includes broader communication technologies.',
+    ],
+    example:`Network Types Summary:
+LAN → Building/campus (up to ~1 km)
+MAN → City-wide network
+WAN → Country/continent (e.g., internet backbone)
+Internet → Global network of networks
+
+TCP/IP example:
+User types www.google.com
+→ DNS resolves to IP: 142.250.80.46
+→ HTTP request sent → webpage received`,
+    tags:['ICT','Networks','LAN','WAN','Internet','Cybersecurity','TCP/IP']
+  },
+  {
+    icon:'📡', color:'#ffd166', title:'Internet of Things (IoT)',
+    explanation:`The Internet of Things (IoT) is a network of physical objects (things) embedded with sensors, software, processors, and communication capabilities that collect and exchange data over the Internet. It connects the physical and digital worlds.`,
+    points:[
+      'IoT formula: IoT = Devices + Sensors + Internet + Data Processing.',
+      'IoT system components: Devices (things), Sensors/Actuators, Connectivity, Data Processing, User Interface.',
+      'IoT architecture layers: Sensing Layer → Network Layer → Data Processing Layer → Application Layer.',
+      'How IoT works: Sensor collects → transmit via network → process in cloud → decision → actuator acts → user feedback.',
+      'IoT communication: Wi-Fi, Bluetooth, Zigbee, GSM, 4G/5G.',
+      'Applications: Smart Homes, Smart Cities, Healthcare, Agriculture, Industrial IoT (IIoT).',
+      'Industrial IoT (IIoT): Predictive maintenance, equipment monitoring, automated manufacturing.',
+      'Benefits: Automation, real-time monitoring, improved decisions, cost reduction.',
+      'Challenges: Security vulnerabilities, privacy concerns, high deployment cost, lack of standardization.',
+    ],
+    example:`IoT Fitness Band Example:
+User walks
+  → Fitness Band (sensors measure steps, heart rate)
+  → Bluetooth → Smartphone (gateway)
+  → Wi-Fi → Cloud Platform (analysis)
+  → Results sent back to Phone App
+  → User sees daily activity report
+
+Key IoT actors: Sensor, Gateway, Cloud, Actuator`,
+    tags:['IoT','Sensors','Smart Home','Cloud','Connectivity','IIoT']
+  },
+  {
+    icon:'🚌', color:'#ff4d6d', title:'System Buses & I/O',
+    explanation:`Buses are shared communication pathways that transfer data between CPU, memory, and I/O devices. The three types of system buses form the backbone of computer hardware communication.`,
+    points:[
+      'Data Bus: Carries actual data between CPU, memory and I/O. Width determines how much data is transferred at once.',
+      'Address Bus: Carries the memory address that the CPU wants to read from or write to.',
+      'Control Bus: Carries control signals (read/write commands, interrupts, clock signals).',
+      'Bus width determines bandwidth: a 64-bit bus transfers 64 bits per cycle.',
+      'I/O devices communicate through device controllers that interface with buses.',
+      'DMA (Direct Memory Access) lets devices transfer data directly to memory without CPU involvement.',
+    ],
+    example:`Bus Interactions:
+CPU wants to READ from address 5000:
+1. CPU sends address 5000 on ADDRESS BUS
+2. CPU sends READ signal on CONTROL BUS
+3. Memory places data on DATA BUS
+4. CPU receives data
+
+Address Bus → one-directional (CPU to memory)
+Data Bus    → bidirectional
+Control Bus → bidirectional`,
+    tags:['System Bus','Data Bus','Address Bus','Control Bus','I/O','DMA']
+  },
+];
+
+/* ============================================================
+   RENDER NOTES
+   ============================================================ */
+function renderNotes(filter='') {
+  const grid = document.getElementById('topicsGrid');
+  grid.innerHTML = '';
+  topics.filter(t => t.title.toLowerCase().includes(filter.toLowerCase()) ||
+    t.tags.some(tg=>tg.toLowerCase().includes(filter.toLowerCase()))
+  ).forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'topic-card';
+    div.innerHTML = `
+      <div class="topic-header" onclick="toggleTopic(this.parentElement)">
+        <div class="topic-icon" style="background:${t.color}18;color:${t.color}">${t.icon}</div>
+        <div class="topic-title">${t.title}</div>
+        <div class="topic-toggle">▼</div>
+      </div>
+      <div class="topic-body">
+        <h4>Overview</h4>
+        <p>${t.explanation.replace(/\n/g,'<br>')}</p>
+        <h4>Key Points</h4>
+        <ul class="key-points">${t.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+        ${t.example?`<h4>Example</h4><div class="example-box">${t.example}</div>`:''}
+        <div class="tag-row">${t.tags.map(tg=>`<span class="tag">${tg}</span>`).join('')}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function toggleTopic(card) {
+  card.classList.toggle('open');
+}
+
+function filterNotes() {
+  renderNotes(document.getElementById('noteSearch').value);
+}
+
+/* ============================================================
+   REVISION CARDS DATA
+   ============================================================ */
+const revCards = [
+  {cat:'Computer Org', concept:'What is Computer Organization?', explanation:'Computer Organization is the study of how hardware components are interconnected and work together to execute instructions. It focuses on control signals, data paths, memory structure, and CPU operations.', takeaway:'Computer Organization = Internal working of a computer (HOW it works).'},
+  {cat:'Computer Org', concept:'The Five Functional Units of a Computer', explanation:'Every computer has five fundamental units: (1) Input Unit — accepts data from outside. (2) Output Unit — presents results. (3) Memory Unit — stores instructions and data. (4) ALU — performs calculations and logic. (5) Control Unit — manages all operations.', takeaway:'Input → CPU (ALU + CU) → Output; Memory supports everything.'},
+  {cat:'CPU & Processing', concept:'Instruction Cycle (Fetch-Decode-Execute)', explanation:'Every program instruction follows a 4-step cycle: FETCH (PC sends address, instruction loaded from RAM), DECODE (CU interprets the instruction), EXECUTE (ALU performs the operation), STORE (result saved to register or memory).', takeaway:'Every CPU instruction follows: Fetch → Decode → Execute → Store.'},
+  {cat:'CPU & Processing', concept:'ALU vs Control Unit', explanation:'ALU (Arithmetic Logic Unit) performs actual computations: arithmetic (ADD, SUB, MUL, DIV) and logic (AND, OR, NOT, XOR). The Control Unit (CU) does NOT compute — it MANAGES the flow of data, interprets instructions, and controls the sequence of operations.', takeaway:'ALU = Calculator; Control Unit = Manager/Director.'},
+  {cat:'Memory', concept:'RAM vs ROM', explanation:'RAM (Random Access Memory) is volatile — it loses all data when power is off. It is used for currently running programs. ROM (Read Only Memory) is non-volatile — retains data permanently. It stores firmware and boot instructions.', takeaway:'RAM = Temporary (needs power); ROM = Permanent (survives power off).'},
+  {cat:'Memory', concept:'Cache Memory Levels', explanation:'Cache memory is ultra-fast memory between CPU and RAM. L1 cache is the smallest and fastest (inside CPU core). L2 is larger but slightly slower. L3 is shared across cores. Cache stores frequently accessed data to reduce RAM access delays.', takeaway:'L1 fastest/smallest → L2 → L3 slowest/largest. All faster than RAM.'},
+  {cat:'Memory', concept:'Memory Hierarchy', explanation:'Memory is organized in layers: Registers (fastest, smallest, most expensive) → Cache (L1/L2/L3) → RAM → SSD/Flash → Hard Disk → Cloud/Virtual Memory (slowest, cheapest, largest capacity).', takeaway:'Faster = Smaller + More Expensive. Slower = Larger + Cheaper.'},
+  {cat:'Registers', concept:'Program Counter (PC)', explanation:'The Program Counter (PC) is a special-purpose register that holds the address of the NEXT instruction to be fetched from memory. After each instruction is fetched, PC automatically increments to point to the next instruction.', takeaway:'PC = "Where are we in the program?" — always points to the next instruction.'},
+  {cat:'Registers', concept:'Key CPU Registers', explanation:'PC=next instruction address, IR=current instruction, MAR=memory address to access, MDR=data being transferred to/from memory, ACC=stores arithmetic results, SP=top of stack pointer, Flag Register=stores condition bits (zero, carry, overflow, sign).', takeaway:'6 key registers: PC, IR, MAR, MDR, ACC, SP. Plus Flag Register for conditions.'},
+  {cat:'Addressing Modes', concept:'Immediate vs Direct Addressing', explanation:'Immediate addressing: the operand VALUE is part of the instruction itself (e.g., MOV R1, #10 — the value 10 is directly given). Direct addressing: the instruction contains a MEMORY ADDRESS where the data is stored (e.g., MOV R1, 5000 — go to address 5000 to get data).', takeaway:'Immediate = value in instruction. Direct = address in instruction.'},
+  {cat:'Addressing Modes', concept:'Indexed & Relative Addressing', explanation:'Indexed: EA = Base Register + Offset. Used for arrays (e.g., MOV R1, 1000(R2) means EA = R2+1000). Relative: EA = PC + Offset. Used for branch/jump instructions to implement loops and conditional jumps.', takeaway:'Indexed = Base + Offset (arrays). Relative = PC + Offset (branches).'},
+  {cat:'Solution Design', concept:'Flowchart Symbols', explanation:'Oval/Terminator = Start or End of algorithm. Rectangle = Process/Operation step. Diamond = Decision point (yes/no condition). Parallelogram = Input or Output. Arrows = Flow of control between steps.', takeaway:'5 symbols: Oval(start/end), Rectangle(process), Diamond(decision), Parallelogram(I/O), Arrow(flow).'},
+  {cat:'Solution Design', concept:'Pseudocode vs Actual Code', explanation:'Pseudocode is structured English that describes an algorithm without any specific programming language syntax. It bridges the gap between natural language thinking and actual code. It uses keywords like BEGIN, END, INPUT, OUTPUT, IF/THEN/ELSE, FOR, WHILE.', takeaway:'Pseudocode = Algorithm in plain English. Not runnable but easily converted to any language.'},
+  {cat:'UML Diagrams', concept:'UML Behavioral vs Structural Diagrams', explanation:'Behavioral UML diagrams show DYNAMIC behavior (how the system acts): Use Case, Activity, Sequence, State Machine diagrams. Structural UML diagrams show STATIC structure (how the system is built): Class, Package, Component, Object, Deployment diagrams.', takeaway:'Behavioral = What system DOES (dynamic). Structural = How system IS BUILT (static).'},
+  {cat:'UML Diagrams', concept:'Use Case Diagram Components', explanation:'Use Case diagrams show how users interact with a system. Components: Actor (stick figure) = user/external system. Use Case (oval) = system function. System Boundary (rectangle) = scope. Association (solid line) = interaction. <<include>> = mandatory. <<extend>> = optional.', takeaway:'Actor + Use Case + System Boundary + Associations = Use Case Diagram.'},
+  {cat:'UML Diagrams', concept:'Class Diagram Visibility Modifiers', explanation:'In UML Class Diagrams, + means public (accessible from anywhere), - means private (only accessible within the class), and # means protected (accessible within class and subclasses). Inheritance is shown with a triangle (△) arrow pointing to the superclass.', takeaway:'+ = public, - = private, # = protected. Triangle arrow = inheritance.'},
+  {cat:'Software Engr', concept:'SDLC Phases', explanation:'The Software Development Life Cycle (SDLC) has 6 main phases: (1) Requirement Analysis, (2) System Design, (3) Implementation/Coding, (4) Testing, (5) Deployment, (6) Maintenance. Each phase has specific deliverables and must be completed systematically.', takeaway:'6 SDLC phases: Require → Design → Code → Test → Deploy → Maintain.'},
+  {cat:'Software Engr', concept:'Waterfall vs Agile', explanation:'Waterfall: Linear, sequential — each phase must be fully complete before the next begins. Good for well-defined projects with fixed requirements. Agile: Iterative sprints (usually 2-week cycles) with continuous feedback and adaptation. Good for evolving requirements.', takeaway:'Waterfall = rigid/sequential. Agile = flexible/iterative sprints.'},
+  {cat:'Software Engr', concept:'OOP Design Principles', explanation:'Modularity: Break software into independent, interchangeable components. Abstraction: Hide complex implementation; show only necessary interfaces. Encapsulation: Bundle data + functions; restrict direct access. Separation of Concerns: Each module should do one thing well (Single Responsibility Principle).', takeaway:'OOP principles: Modularity, Abstraction, Encapsulation, Separation of Concerns.'},
+  {cat:'Software Engr', concept:'Software Testing Types', explanation:'Unit Testing: Tests individual functions/components in isolation. Integration Testing: Tests interaction between modules. System Testing: Tests the complete application. UAT (User Acceptance Testing): End-users verify the software meets their requirements before production release.', takeaway:'4 levels: Unit → Integration → System → UAT. Each broader than the last.'},
+  {cat:'Software Engr', concept:'Software Maintenance Types', explanation:'Three types of maintenance after deployment: (1) Corrective — fixing bugs and defects. (2) Adaptive — updating software to work with new hardware/OS/platforms. (3) Perfective — improving performance, adding features, refactoring code for better maintainability.', takeaway:'CAP: Corrective(bugs), Adaptive(new tech), Perfective(enhancements).'},
+  {cat:'MATLAB', concept:'Why Engineers Use MATLAB', explanation:'MATLAB (Matrix Laboratory) is ideal for engineers because: it handles complex matrix/vector math natively, provides specialized toolboxes (Control System, Signal Processing, Neural Network), supports Simulink for graphical simulation, produces high-quality 2D/3D visualizations, and integrates with hardware for real-time testing.', takeaway:'MATLAB = matrix math + toolboxes + simulation (Simulink) + visualization.'},
+  {cat:'MATLAB', concept:'MATLAB Limitations', explanation:'Despite its power, MATLAB has significant limitations: (1) Requires a paid license — it is expensive and not open-source. (2) Slower execution than C, C++, or Fortran for performance-critical applications. (3) Uses large amounts of memory due to its interpreted nature and matrix overhead.', takeaway:'MATLAB limitations: Paid license, slower than C/C++, high memory usage.'},
+  {cat:'ICT & IoT', concept:'ICT vs Computing', explanation:'Computing focuses on using computers to perform calculations and process data — it is about algorithms, software, and data processing. ICT is broader — it encompasses computing PLUS communication technologies: networks, telecommunications, internet, and digital communication systems.', takeaway:'Computing ⊂ ICT. ICT = Computing + Communication Technologies.'},
+  {cat:'ICT & IoT', concept:'IoT Architecture Layers', explanation:'IoT systems have 4 layers: (1) Sensing Layer — sensors/actuators collect real-world data. (2) Network Layer — gateways transmit data via Wi-Fi/Bluetooth/4G/5G. (3) Data Processing Layer — cloud/edge devices process and analyze data. (4) Application Layer — user-facing apps display results and trigger actions.', takeaway:'4 IoT layers: Sensing → Network → Processing → Application.'},
+  {cat:'ICT & IoT', concept:'IoT vs Traditional Internet', explanation:'Traditional Internet connects computers and servers for human-to-human communication. IoT extends this to machine-to-machine (M2M) communication — physical objects (thermostats, cars, medical devices, industrial machines) automatically collect and exchange data without human intervention.', takeaway:'IoT = Internet extended to physical objects (M2M, no human needed).'},
+  {cat:'Boolean & Data', concept:'Floating-Point Representation (IEEE 754)', explanation:'Floating-point numbers in computers follow the IEEE 754 standard. A 32-bit float has 3 parts: Sign bit (1 bit), Exponent (8 bits), Mantissa/Fraction (23 bits). The value = (-1)^sign × 1.mantissa × 2^(exponent-127). This allows representation of very large and very small numbers.', takeaway:'IEEE 754 float = 1 sign bit + 8 exponent bits + 23 mantissa bits.'},
+  {cat:'Boolean & Data', concept:'Non-Numeric Data Representation', explanation:'Computers store non-numeric data as binary. Text uses character encoding: ASCII (7-bit, 128 characters) or Unicode (up to 32-bit, millions of characters including emojis). Images use pixels (RGB values). Audio uses sampled amplitude values. Video = images + audio combined.', takeaway:'Text → ASCII/Unicode. Images → pixels (RGB). Audio → sampled amplitudes.'},
+  {cat:'Computer Org', concept:'System Buses (Data, Address, Control)', explanation:'The three system buses allow CPU, memory, and I/O to communicate. Data Bus carries actual data (bidirectional). Address Bus carries memory locations the CPU wants to access (CPU → Memory, unidirectional). Control Bus carries command signals like Read/Write, clock, interrupt signals.', takeaway:'3 buses: Data(what), Address(where), Control(how/when).'},
+  {cat:'Operating System', concept:'Types of Operating Systems', explanation:'Batch OS: Executes jobs in batches without user interaction. Time-Sharing OS: Multiple users share CPU time simultaneously. Real-Time OS (RTOS): Guaranteed response times for critical applications (aerospace, medical). Distributed OS: Multiple systems work as one. Mobile OS: Optimized for smartphones (Android, iOS).', takeaway:'5 OS types: Batch, Time-Sharing, RTOS, Distributed, Mobile.'},
+  {cat:'Operating System', concept:'Process vs Thread', explanation:'A Process is an independent program in execution — it has its own memory space, resources, and state. A Thread is a lightweight unit of execution WITHIN a process — threads share the same memory space. Multi-threading allows a single program to perform multiple tasks concurrently.', takeaway:'Process = independent program. Thread = lightweight task inside a process. Threads share memory.'},
+  {cat:'Solution Design', concept:'UML Sequence Diagram', explanation:'A Sequence Diagram shows how objects interact OVER TIME. Key notations: Lifeline (vertical dashed line) = participant, Activation bar (thin rectangle) = active period, Call Message (solid arrow) = invoking a method, Return Message (dashed arrow) = returning a value, Self Message = object calling its own method.', takeaway:'Sequence diagram = who does what to whom and in what ORDER.'},
+  {cat:'Software Engr', concept:'Version Control (Git)', explanation:'Version control systems track changes to code over time. Git is the industry standard. Key concepts: Repository (repo) = project folder with history. Commit = snapshot of changes. Branch = parallel development line. Merge = combining branches. Push = upload to remote. Pull = download from remote.', takeaway:'Git: commit(save) → branch(develop) → merge(combine) → push/pull(sync).'},
+  {cat:'MATLAB', concept:'MATLAB Simulink', explanation:'Simulink is a graphical simulation environment built on top of MATLAB. Engineers build block diagrams to simulate real-world systems without writing code. Used for control system design, signal processing, communication systems, embedded system design, and power electronics.', takeaway:'Simulink = drag-and-drop block diagrams for simulating real-world systems.'},
+  {cat:'ICT & IoT', concept:'Cybersecurity Fundamentals', explanation:'Common threats: Malware (malicious software), Phishing (deceptive emails/sites to steal info), Ransomware (encrypts files and demands payment), Hacking (unauthorized system access). Defenses: Firewalls (filter network traffic), Antivirus (detect/remove malware), Encryption (encode data), Strong Authentication (MFA).', takeaway:'4 threats: Malware, Phishing, Ransomware, Hacking. 4 defenses: Firewall, Antivirus, Encryption, Auth.'},
+  {cat:'Boolean & Data', concept:'Number System Conversions', explanation:'Decimal to Binary: repeatedly divide by 2, read remainders bottom-up. Binary to Decimal: multiply each bit by 2^position and sum. Hexadecimal (base-16) uses digits 0-9 and A-F. One hex digit = 4 binary bits (nibble). Example: 0xFF = 1111 1111 in binary = 255 in decimal.', takeaway:'Binary(2), Octal(8), Decimal(10), Hex(16). 1 hex digit = 4 bits.'},
+  {cat:'Software Engr', concept:'Software Architecture Patterns', explanation:'Monolithic Architecture: Entire application in one codebase — simple to develop but hard to scale. Microservices: Application split into small independent services that communicate via APIs — scalable and maintainable but complex to manage. Client-Server: Clients request resources; servers provide them — backbone of the internet.', takeaway:'3 architectures: Monolithic(simple), Microservices(scalable), Client-Server(network apps).'},
+];
+
+/* ============================================================
+   RENDER REVISION CARDS
+   ============================================================ */
+const catColors = {
+  'Computer Org':'#00d4ff','CPU & Processing':'#7c3aed','Memory':'#10d97e',
+  'Registers':'#ffd166','Addressing Modes':'#ff4d6d','Solution Design':'#00d4ff',
+  'UML Diagrams':'#7c3aed','Software Engr':'#10d97e','MATLAB':'#ffd166',
+  'ICT & IoT':'#ff4d6d','Boolean & Data':'#00d4ff','Operating System':'#7c3aed'
+};
+
+function renderCards(filterCat='All') {
+  const grid = document.getElementById('revGrid');
+  grid.innerHTML = '';
+  const filtered = filterCat==='All' ? revCards : revCards.filter(c=>c.cat===filterCat);
+  filtered.forEach(c => {
+    const div = document.createElement('div');
+    div.className='rev-card';
+    const col = catColors[c.cat]||'#00d4ff';
+    div.innerHTML=`
+      <div class="rev-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="rev-cat-dot" style="background:${col}"></span>
+        <span class="rev-card-title">${c.concept}</span>
+        <span class="rev-toggle" style="color:${col}">▼</span>
+      </div>
+      <div class="rev-card-body">
+        <p>${c.explanation}</p>
+        <div class="takeaway">🎯 ${c.takeaway}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function renderCatFilter() {
+  const cats = ['All', ...new Set(revCards.map(c=>c.cat))];
+  const f = document.getElementById('catFilter');
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className='filter-btn'+(cat==='All'?' active':'');
+    btn.textContent=cat;
+    btn.onclick=()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCards(cat);
+    };
+    f.appendChild(btn);
+  });
+}
+
+/* ============================================================
+   QUESTION BANK (100 Questions)
+   ============================================================ */
+const questionBank = [
+  // ---- Computer Organization ----
+  {question:"What does Computer Organization primarily focus on?",options:["System design and programmer-visible features","Control signals, data paths, memory structure and internal CPU operations","Writing programs in assembly language","Designing user interfaces"],answer:"B",explanation:"Computer Organization focuses on the internal operational structure — how control signals, data paths, memory, and CPU operations function together."},
+  {question:"Which are the five major functional units of a computer?",options:["CPU, GPU, RAM, ROM, SSD","Input, Output, Memory, ALU, Control Unit","Keyboard, Monitor, CPU, Motherboard, Power Supply","Fetch, Decode, Execute, Store, Output"],answer:"B",explanation:"The five functional units are: Input Unit, Output Unit, Memory Unit, Arithmetic Logic Unit (ALU), and Control Unit."},
+  {question:"What is the role of the ALU in the CPU?",options:["Managing the flow of data between components","Storing the next instruction address","Performing arithmetic and logical operations","Coordinating I/O device operations"],answer:"C",explanation:"The ALU (Arithmetic Logic Unit) performs arithmetic operations (ADD, SUB, MUL, DIV) and logical operations (AND, OR, NOT, XOR)."},
+  {question:"Which register holds the address of the NEXT instruction to be executed?",options:["Accumulator (ACC)","Memory Data Register (MDR)","Program Counter (PC)","Stack Pointer (SP)"],answer:"C",explanation:"The Program Counter (PC) always holds the address of the next instruction to be fetched from memory."},
+  {question:"What is the correct order of the instruction cycle?",options:["Execute → Fetch → Decode → Store","Fetch → Decode → Execute → Store","Decode → Fetch → Execute → Store","Store → Execute → Decode → Fetch"],answer:"B",explanation:"Every instruction follows the cycle: Fetch (get instruction from memory) → Decode (CU interprets it) → Execute (ALU performs it) → Store (save result)."},
+  {question:"In the instruction 'MOV R1, #10', what does the # symbol indicate?",options:["A memory address","A register name","An immediate value (constant)","An indirect reference"],answer:"C",explanation:"The # symbol indicates an immediate value — the number 10 is the actual operand, not a memory address or register."},
+  {question:"What type of addressing mode is used in: MOV R1, 5000?",options:["Immediate Addressing","Indirect Addressing","Register Addressing","Direct Addressing"],answer:"D",explanation:"Direct Addressing means the instruction contains the actual memory address (5000) where the data is stored. EA = 5000."},
+  {question:"In Indexed Addressing: MOV R1, 1000(R2), what is the Effective Address (EA)?",options:["EA = 1000","EA = R2","EA = R2 + 1000","EA = 1000 - R2"],answer:"C",explanation:"In Indexed Addressing, EA = Base Register + Offset. Here EA = R2 + 1000. Used commonly for array access."},
+  {question:"Which operation does the Stack Addressing mode follow?",options:["FIFO (First In, First Out)","LIFO (Last In, First Out)","FILO (First In, Last Out)","Random Access"],answer:"B",explanation:"Stack addressing follows LIFO (Last In, First Out). PUSH adds to top; POP removes from top. Last item pushed is first to be popped."},
+  {question:"What does the 'R1 ← R2' register transfer notation mean?",options:["Add R1 and R2","Copy contents of R2 into R1","Move R1 to R2","Compare R1 and R2"],answer:"B",explanation:"Register transfer notation R1 ← R2 means: copy the contents of register R2 into register R1."},
+  // ---- Memory ----
+  {question:"A system with 16 address lines can access how many memory locations?",options:["16,000","32,768","65,536","131,072"],answer:"C",explanation:"With n address lines, maximum memory locations = 2^n. For 16 lines: 2^16 = 65,536 memory locations."},
+  {question:"Which type of memory is volatile?",options:["ROM","Flash Memory","RAM","EEPROM"],answer:"A",explanation:"RAM (Random Access Memory) is volatile — it loses all stored data when power is removed. ROM, Flash, and EEPROM are non-volatile."},
+  {question:"What is the purpose of cache memory?",options:["To permanently store the operating system","To provide a fast buffer between CPU and RAM","To store secondary data on disk","To manage I/O operations"],answer:"B",explanation:"Cache memory is ultra-fast memory that sits between CPU and RAM. It stores frequently used data to reduce the time the CPU spends waiting for RAM access."},
+  {question:"Which level of cache is smallest and fastest?",options:["L3 Cache","L2 Cache","L1 Cache","Virtual Cache"],answer:"C",explanation:"L1 cache is the smallest, fastest, and most expensive. It is directly inside the CPU core. L2 is larger but slower, L3 largest but slowest among caches."},
+  {question:"What is the Memory Hierarchy order from FASTEST to SLOWEST?",options:["RAM → Cache → Registers → Hard Disk","Hard Disk → RAM → Cache → Registers","Registers → Cache → RAM → Hard Disk","Cache → Registers → RAM → SSD"],answer:"C",explanation:"From fastest to slowest: Registers → Cache (L1/L2/L3) → RAM → SSD → Hard Disk. Faster memory is also smaller and more expensive."},
+  // ---- Solution Design ----
+  {question:"Which flowchart symbol represents a DECISION point?",options:["Oval","Rectangle","Parallelogram","Diamond"],answer:"D",explanation:"A Diamond shape represents a decision point in a flowchart — it tests a yes/no or true/false condition and has two exit paths."},
+  {question:"What does a Parallelogram symbol represent in a flowchart?",options:["Start or End","A process step","Input or Output","A decision"],answer:"C",explanation:"A Parallelogram represents Input or Output operations — such as accepting user input or displaying a result."},
+  {question:"What is pseudocode?",options:["A programming language with strict syntax","A graphical representation using symbols","A high-level algorithm description using structured natural language","Binary code before compilation"],answer:"C",explanation:"Pseudocode describes an algorithm using structured natural language + programming logic. It has no strict syntax and cannot be directly executed — it's used for planning."},
+  {question:"When was UML adopted as an ISO standard?",options:["1995","2001","2005","2010"],answer:"C",explanation:"UML (Unified Modeling Language) was published by the International Organization for Standardization (ISO) as an approved standard in 2005."},
+  {question:"What does <<include>> represent in a UML Use Case Diagram?",options:["An optional feature that may be added","A mandatory dependency where one use case always triggers another","An inheritance relationship","A boundary between two systems"],answer:"B",explanation:"<<include>> represents a mandatory dependency — the source use case always includes/triggers the included use case. For example, 'Search Documents' always includes 'Download Documents'."},
+  {question:"What does <<extend>> represent in a UML Use Case Diagram?",options:["A mandatory dependency","An inheritance relationship between two actors","An optional dependency that occurs only under certain conditions","A package import"],answer:"C",explanation:"<<extend>> represents an optional dependency — the extending use case may be triggered only under specific conditions. Example: 'Upload Docs' may extend 'Manage Folders'."},
+  {question:"In a UML Class Diagram, what does the '-' (minus) visibility modifier mean?",options:["Public — accessible from anywhere","Protected — accessible to subclasses","Private — only accessible within the class","Abstract — no direct instantiation"],answer:"C",explanation:"In UML Class Diagrams: + = public, - = private (only within the class), # = protected (class + subclasses)."},
+  {question:"What type of relationship is shown by a triangle (△) arrow in a UML Class Diagram?",options:["Association","Dependency","Aggregation","Inheritance (Generalization)"],answer:"D",explanation:"A hollow triangle arrow pointing toward the superclass represents inheritance (generalization). The subclass inherits attributes and methods from the superclass."},
+  {question:"What is the main purpose of a UML Sequence Diagram?",options:["To show static class relationships","To show interactions between objects over TIME in sequence","To model database schemas","To depict user interface layouts"],answer:"B",explanation:"Sequence diagrams show how objects or components interact over time — focusing on the ORDER of messages/operations exchanged between participants."},
+  {question:"In a UML Sequence Diagram, what does a 'Lifeline' represent?",options:["The duration of a message","An individual participant in the interaction","The actor external to the system","A decision point"],answer:"B",explanation:"A lifeline represents an individual participant (object or component) in a sequence diagram. It appears as a vertical dashed line from the participant box."},
+  // ---- Software Engineering ----
+  {question:"Which SDLC model is sequential with each phase completing before the next begins?",options:["Agile","Spiral","Waterfall","DevOps"],answer:"C",explanation:"The Waterfall model is a linear, sequential SDLC approach where each phase (Requirements → Design → Implementation → Testing → Deployment → Maintenance) must be fully completed before the next begins."},
+  {question:"What is the correct sequence of SDLC phases?",options:["Design → Testing → Coding → Deployment → Requirements","Requirements → Design → Implementation → Testing → Deployment → Maintenance","Coding → Requirements → Testing → Design → Maintenance","Testing → Requirements → Design → Deployment → Coding"],answer:"B",explanation:"SDLC phases in order: Requirements Analysis → System Design → Implementation (Coding) → Testing → Deployment → Maintenance."},
+  {question:"What is Agile software development?",options:["A single delivery at end of project","Sequential phase-by-phase development","Iterative development with frequent feedback and short sprints","A testing-only methodology"],answer:"C",explanation:"Agile is an iterative approach to software development. Work is divided into short sprints (usually 2 weeks), with continuous feedback and adaptation to changing requirements."},
+  {question:"What type of software maintenance fixes bugs after deployment?",options:["Adaptive Maintenance","Perfective Maintenance","Corrective Maintenance","Preventive Maintenance"],answer:"C",explanation:"Corrective maintenance addresses bugs and defects discovered after deployment. Adaptive = new tech compatibility; Perfective = performance improvements."},
+  {question:"Which software design principle means breaking software into independent components?",options:["Abstraction","Encapsulation","Modularity","Polymorphism"],answer:"C",explanation:"Modularity means dividing software into independent, interchangeable components (modules). Each module performs a specific function and can be developed, tested, and maintained independently."},
+  {question:"What does UAT stand for in software testing?",options:["Universal Application Testing","User Acceptance Testing","Unified Architecture Testing","Unit and Automated Testing"],answer:"B",explanation:"UAT stands for User Acceptance Testing — the final testing phase where actual end-users verify that the software meets their requirements before it goes live."},
+  {question:"What is DevOps?",options:["A programming language","A combination of development and operations for continuous delivery","A type of database","A hardware design methodology"],answer:"B",explanation:"DevOps combines development (Dev) and operations (Ops) practices to enable continuous integration, continuous delivery, automation, and rapid deployment of software."},
+  // ---- MATLAB ----
+  {question:"What does MATLAB stand for?",options:["Machine Learning and Technology Automation Lab","Matrix Laboratory","Mathematical Analysis Tool and Language","Modular Algorithm Testing and Logic Base"],answer:"B",explanation:"MATLAB stands for Matrix Laboratory. Developed by MathWorks, it treats all data as matrices/arrays, making it powerful for mathematical and engineering computations."},
+  {question:"Which MATLAB tool provides graphical block-diagram simulation?",options:["Script Editor","Command Window","Simulink","Workspace"],answer:"C",explanation:"Simulink is a graphical simulation environment integrated with MATLAB. Engineers build systems using block diagrams to simulate real-world processes like control systems and signal processing."},
+  {question:"In MATLAB, what does the backslash operator (A\\b) solve?",options:["Division of two matrices","The linear system Ax = b","Square root of matrix A","Transpose of matrix A"],answer:"B",explanation:"In MATLAB, the backslash operator (\\) solves the linear system Ax = b for x, using efficient numerical methods like Gaussian elimination."},
+  {question:"What is a major limitation of MATLAB?",options:["It cannot perform matrix operations","It does not support visualization","It requires a paid license and is slower than C/C++","It cannot run on Windows"],answer:"C",explanation:"MATLAB requires an expensive paid license and is slower than low-level languages like C and C++ for performance-critical tasks. It also uses significant memory."},
+  {question:"For which engineering field would MATLAB's FFT (Fast Fourier Transform) be most relevant?",options:["Civil Engineering — structural design","Mechanical Engineering — vibration analysis","Electrical Engineering — signal processing","Chemical Engineering — reaction kinetics"],answer:"C",explanation:"FFT (Fast Fourier Transform) is used in signal processing — a core application in Electrical and Electronics Engineering for frequency analysis, filtering, and noise reduction."},
+  {question:"What does Simulink primarily use for system modeling?",options:["Text-based code in .m files","SQL database queries","Graphical block diagrams","Python scripts"],answer:"C",explanation:"Simulink uses graphical block diagrams where engineers drag and connect blocks representing components (gains, integrators, filters) to simulate real-world systems visually."},
+  // ---- ICT ----
+  {question:"What does ICT stand for?",options:["International Computing Technology","Information and Communication Technology","Integrated Circuit Technology","Internet and Computer Telecommunications"],answer:"B",explanation:"ICT stands for Information and Communication Technology — it refers to technologies for collecting, processing, storing, transmitting, and managing digital information."},
+  {question:"What is the difference between DATA and INFORMATION?",options:["They are the same thing","Data is processed; information is raw","Data is raw facts; information is processed and meaningful data","Information is stored; data is transmitted"],answer:"C",explanation:"Data consists of raw, unprocessed facts (e.g., numbers, symbols). Information is data that has been processed and given context to become meaningful and useful."},
+  {question:"Which network type covers a single building or campus?",options:["WAN","MAN","Internet","LAN"],answer:"D",explanation:"LAN (Local Area Network) covers a small geographic area like a building or campus. MAN covers a city; WAN covers countries/continents; Internet is global."},
+  {question:"What protocol does the Internet use for communication?",options:["HTTP only","FTP/SMTP","TCP/IP","UDP only"],answer:"C",explanation:"The Internet uses the TCP/IP (Transmission Control Protocol/Internet Protocol) suite as its fundamental communication protocol for routing and delivering data packets."},
+  {question:"Which cybersecurity attack sends fake emails to steal login credentials?",options:["Ransomware","Hacking","Malware","Phishing"],answer:"D",explanation:"Phishing involves deceptive emails, websites, or messages that trick users into revealing passwords, credit card numbers, or other sensitive information."},
+  {question:"What cybersecurity measure encodes data to prevent unauthorized access?",options:["Firewall","Authentication","Encryption","Antivirus"],answer:"C",explanation:"Encryption transforms data into an unreadable format (ciphertext) using a key. Only authorized parties with the decryption key can read the original data."},
+  // ---- IoT ----
+  {question:"What does IoT stand for?",options:["Internet of Technology","Integrated Online Technology","Internet of Things","Input/Output Technology"],answer:"C",explanation:"IoT stands for Internet of Things — a network of physical objects embedded with sensors, software, and connectivity that allows them to collect and exchange data over the Internet."},
+  {question:"What is the correct IoT formula?",options:["IoT = Hardware + Software + Memory","IoT = Devices + Sensors + Internet + Data Processing","IoT = Computer + Network + Database","IoT = Bluetooth + Wi-Fi + Cloud"],answer:"B",explanation:"IoT = Devices (things) + Sensors (collect data) + Internet (connectivity) + Data Processing (makes sense of data). All four components are essential."},
+  {question:"In what order does data flow in an IoT system?",options:["Cloud → Sensor → Network → User","Sensor → Network → Processing → User","User → Sensor → Cloud → Actuator","Processing → Sensor → Network → Actuator"],answer:"B",explanation:"IoT data flow: Sensor collects data → transmitted via Network → Data processed in Cloud/Edge → Decision made → Actuator acts → User receives feedback."},
+  {question:"Which IoT application involves remote patient monitoring?",options:["Smart Cities","Industrial IoT","Smart Homes","Healthcare IoT"],answer:"D",explanation:"Healthcare IoT includes wearable health monitors, remote patient monitoring systems, smart medical equipment, and electronic health records that improve patient care."},
+  {question:"What is a major challenge of IoT deployment?",options:["Too few connected devices","Excessive processing speed","Security vulnerabilities and privacy concerns","Lack of sensors available"],answer:"C",explanation:"IoT faces serious challenges including security vulnerabilities (each device is a potential attack point), privacy concerns, high deployment costs, and lack of industry standardization."},
+  {question:"Which layer of IoT architecture contains sensors and actuators?",options:["Application Layer","Data Processing Layer","Network Layer","Sensing Layer"],answer:"D",explanation:"The Sensing Layer (bottom layer) contains sensors that collect real-world data (temperature, motion, pressure) and actuators that perform physical actions based on commands."},
+  // ---- Operating Systems ----
+  {question:"What is the primary role of an Operating System?",options:["To write application programs","To act as intermediary between users and hardware, managing resources","To design computer circuits","To create network protocols"],answer:"B",explanation:"An OS acts as an intermediary between users/applications and hardware. It manages CPU, memory, file systems, I/O devices, and security — enabling programs to run and communicate with hardware."},
+  {question:"Which OS kernel type runs all services in a single large block of code?",options:["Microkernel","Hybrid Kernel","Distributed Kernel","Monolithic Kernel"],answer:"D",explanation:"A Monolithic Kernel runs all OS services (process management, memory, drivers, file system) in a single large block in kernel mode. Example: Linux uses a monolithic kernel."},
+  {question:"What does the OS handle in 'Process Management'?",options:["Managing disk files","Allocating CPU time, scheduling, creating/terminating processes, and IPC","Controlling network access","Managing display output"],answer:"B",explanation:"Process management includes: creating and terminating processes, scheduling CPU time, context switching between processes, synchronization, and inter-process communication (IPC)."},
+  {question:"Which OS type guarantees response times for critical applications?",options:["Batch OS","Time-Sharing OS","Real-Time OS (RTOS)","Mobile OS"],answer:"C",explanation:"Real-Time Operating Systems (RTOS) are designed for applications where timing is critical — such as aerospace control, medical devices, and industrial automation — guaranteeing response within specified time constraints."},
+  {question:"What is the difference between a Process and a Thread?",options:["They are identical concepts","A process is a single instruction; a thread is a program","A process is an independent program with its own memory; a thread is a lightweight unit within a process sharing memory","A thread is larger than a process"],answer:"C",explanation:"A process is an independent executing program with its own memory space. A thread is a lightweight unit of execution within a process — threads of the same process share memory, making communication faster."},
+  // ---- OOP and Programming ----
+  {question:"What are the four pillars of Object-Oriented Programming?",options:["Loops, Conditions, Functions, Variables","Encapsulation, Inheritance, Polymorphism, Abstraction","Recursion, Iteration, Sorting, Searching","Compilation, Interpretation, Linking, Loading"],answer:"B",explanation:"The four OOP pillars are: Encapsulation (bundle data+methods), Inheritance (subclass gets parent's properties), Polymorphism (one interface, many implementations), Abstraction (hide complexity)."},
+  {question:"What is a 'Class' in OOP?",options:["An actual object in memory","A blueprint/template for creating objects","A function that returns a value","A type of variable"],answer:"B",explanation:"A class is a blueprint or template that defines attributes (data) and methods (behavior) for objects. An object is a specific instance created from a class. Example: 'Car' is a class; 'myHonda' is an object."},
+  {question:"What does Encapsulation mean in OOP?",options:["Inheriting properties from a parent class","Running multiple implementations of a function","Bundling data and methods together and restricting direct access","Hiding the algorithm's complexity from users"],answer:"C",explanation:"Encapsulation bundles data (attributes) and the methods that operate on that data into a single unit (class), and restricts direct access using access modifiers (public, private, protected)."},
+  {question:"What is Inheritance in OOP?",options:["A subclass receiving attributes and methods from a superclass","Two objects of the same class","A class with no attributes","An object that cannot be modified"],answer:"A",explanation:"Inheritance allows a subclass (child) to inherit attributes and methods from a superclass (parent). This promotes code reuse. Example: Duck, Fish, Zebra all inherit from Animal."},
+  {question:"What is operator precedence?",options:["The order in which variables are declared","The priority order in which operators are evaluated in an expression","The number of operands an operator takes","The speed of arithmetic operations"],answer:"B",explanation:"Operator precedence defines the order in which operations are performed. BEDMAS: Brackets first, then Exponents, then Division/Multiplication, then Addition/Subtraction."},
+  // ---- Data Structures ----
+  {question:"What does LIFO stand for and which data structure uses it?",options:["Last In, First Out — Stack","Last In, First Out — Queue","Last In, First Out — Array","Last In, First Out — Linked List"],answer:"A",explanation:"LIFO = Last In, First Out. Stacks follow this principle — the last element added (pushed) is the first to be removed (popped). Like a stack of plates."},
+  {question:"What does FIFO stand for and which data structure uses it?",options:["First In, First Out — Stack","First In, First Out — Queue","First In, First Out — Tree","First In, First Out — Hash Table"],answer:"B",explanation:"FIFO = First In, First Out. Queues follow this principle — the first element added (enqueued) is the first to be removed (dequeued). Like a line of people waiting."},
+  {question:"What is the time complexity of accessing an element in an array by index?",options:["O(n)","O(log n)","O(n²)","O(1)"],answer:"D",explanation:"Array access by index is O(1) — constant time — because the memory address is computed directly as: base_address + (index × element_size). No searching needed."},
+  {question:"In a Binary Search Tree (BST), where is each left child's value relative to its parent?",options:["Greater than the parent","Equal to the parent","Less than the parent","Random position"],answer:"C",explanation:"In a BST: left child < parent node < right child. This property enables efficient O(log n) searching by eliminating half the remaining nodes at each step."},
+  // ---- Additional Boolean & Number Systems ----
+  {question:"Convert binary 1011 to decimal.",options:["9","10","11","12"],answer:"C",explanation:"Binary 1011 = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ = 8 + 0 + 2 + 1 = 11 in decimal."},
+  {question:"What is the De Morgan's Law for NOT(A AND B)?",options:["NOT A AND NOT B","NOT A OR NOT B","A OR B","A AND B"],answer:"B",explanation:"De Morgan's Law: NOT(A AND B) = NOT A OR NOT B. Also: NOT(A OR B) = NOT A AND NOT B. These are fundamental for simplifying Boolean expressions."},
+  {question:"How many characters can standard 7-bit ASCII encode?",options:["64","128","256","512"],answer:"B",explanation:"Standard ASCII uses 7 bits, giving 2^7 = 128 possible characters including letters (A-Z, a-z), digits (0-9), punctuation, and control characters."},
+  {question:"What are the three fields in IEEE 754 single-precision floating point?",options:["Integer, Fraction, Exponent","Sign, Exponent, Mantissa","Base, Power, Coefficient","Whole, Decimal, Sign"],answer:"B",explanation:"IEEE 754 single-precision (32-bit) float = 1 Sign bit + 8 Exponent bits + 23 Mantissa (fraction) bits = 32 bits total."},
+  // ---- More ICT and Networking ----
+  {question:"What does DNS stand for and what does it do?",options:["Data Network Service — routes data","Domain Name System — converts domain names to IP addresses","Dynamic Network Security — protects networks","Distributed Node System — manages servers"],answer:"B",explanation:"DNS (Domain Name System) translates human-readable domain names (like www.google.com) into numerical IP addresses (like 142.250.80.46) that computers use to find each other."},
+  {question:"What is the difference between HTTP and HTTPS?",options:["HTTP is faster; HTTPS is older","HTTPS is encrypted (secure); HTTP is unencrypted","They are exactly the same","HTTP works for images; HTTPS works for text"],answer:"B",explanation:"HTTPS (Hypertext Transfer Protocol Secure) adds TLS/SSL encryption to HTTP. HTTPS protects data in transit, preventing interception — essential for banking, login pages, and e-commerce."},
+  {question:"Which network type covers a metropolitan area (city)?",options:["LAN","WAN","MAN","PAN"],answer:"C",explanation:"MAN (Metropolitan Area Network) covers a city or large campus area — larger than a LAN but smaller than a WAN. Examples include city-wide Wi-Fi networks or cable TV networks."},
+  // ---- More SDLC and Software ----
+  {question:"What is the purpose of version control systems like Git?",options:["To run applications faster","To track changes to code over time, enabling collaboration and rollback","To compile source code","To design user interfaces"],answer:"B",explanation:"Version control (e.g., Git) tracks all changes made to code over time. It enables: multiple developers to collaborate, reverting to previous versions, branching for parallel development, and maintaining code history."},
+  {question:"What is Technical Documentation in software engineering?",options:["User manuals for end-users","Marketing materials","System architecture references, API docs, and code comments for developers","Testing reports"],answer:"C",explanation:"Technical documentation includes system architecture documents, API references, code comments, and developer guides — intended for technical team members who build and maintain the software."},
+  {question:"What does 'Microservices architecture' mean?",options:["Using very small computers","A single unified codebase","An application split into small independent services that communicate via APIs","A software design pattern for mobile apps"],answer:"C",explanation:"Microservices architecture splits an application into small, independent services — each responsible for a specific business function. Services communicate via APIs and can be deployed, scaled, and updated independently."},
+  // ---- More Computer Org ----
+  {question:"What does the Flag/Status Register store?",options:["The next instruction address","Individual bits (flags) indicating CPU state after operations (zero, carry, sign, overflow)","All program variables","The operating system kernel"],answer:"B",explanation:"The Flag/Status Register contains individual bits automatically set by the ALU after operations: Zero flag (result is zero), Carry flag, Sign flag, Overflow flag — used for conditional branching."},
+  {question:"What is the purpose of the Address Bus?",options:["Transferring data between CPU and memory","Carrying the memory address that the CPU wants to access","Transmitting control signals like read/write","Providing power to components"],answer:"B",explanation:"The Address Bus carries the memory address from the CPU to memory/I/O. It is unidirectional (CPU → Memory). The width of the address bus determines the maximum addressable memory."},
+  {question:"What does Relative Addressing use to calculate the Effective Address?",options:["A base register + offset","The immediate value in the instruction","PC (Program Counter) + offset","The stack pointer value"],answer:"C",explanation:"Relative Addressing: EA = PC + Offset. The offset (positive or negative) is added to the current PC value. Used for branch instructions and loops — allows position-independent code."},
+  // ---- More IoT ----
+  {question:"What role does a smartphone play in an IoT fitness band system?",options:["It is the sensor","It acts as a gateway device — receives data from band and sends to cloud","It processes all the data locally without internet","It is the actuator"],answer:"B",explanation:"In a fitness IoT system, the smartphone acts as a gateway — it receives data from the fitness band (via Bluetooth) and forwards it to the cloud (via Wi-Fi/mobile data) for advanced processing and analysis."},
+  {question:"What is Industrial IoT (IIoT)?",options:["IoT used only in consumer electronics","IoT applications in manufacturing and industry for predictive maintenance and automation","IoT devices for home use","IoT for educational institutions"],answer:"B",explanation:"Industrial IoT (IIoT) applies IoT technologies in manufacturing and industrial settings for: predictive maintenance (predicting equipment failures), real-time monitoring, automated manufacturing, and quality control."},
+  // ---- More OOP ----
+  {question:"Which OOP concept means 'one interface, multiple implementations'?",options:["Encapsulation","Inheritance","Abstraction","Polymorphism"],answer:"D",explanation:"Polymorphism means one interface can have many forms/implementations. Example: a 'draw()' method works differently for Circle, Rectangle, and Triangle — same method name, different behavior."},
+  {question:"In the UML class diagram shown, if Duck inherits from Animal, what relationship is this?",options:["Association","Dependency","Generalization (Inheritance)","Aggregation"],answer:"C",explanation:"When a subclass (Duck) inherits from a superclass (Animal), this is called Generalization or Inheritance. In UML, it's shown with a hollow triangle arrow pointing from child to parent."},
+  // ---- Final Mixed Questions ----
+  {question:"What is the main difference between a Monolithic and Microkernel OS design?",options:["Monolithic uses more RAM","In monolithic, all OS services run in kernel mode; in microkernel only essential services run in kernel mode","Microkernel is faster in all cases","Monolithic OS runs only on Windows"],answer:"B",explanation:"Monolithic Kernel: all OS services (file system, drivers, networking) run in kernel mode as one large program. Microkernel: only essential services (IPC, memory management) in kernel; others run as user-space processes — more modular but potentially slower."},
+  {question:"Which MATLAB toolbox would be used for designing a PID controller?",options:["Image Processing Toolbox","Neural Network Toolbox","Control System Toolbox","Statistics Toolbox"],answer:"C",explanation:"The Control System Toolbox in MATLAB provides tools for designing, analyzing, and tuning control systems — including PID controllers, transfer functions, root locus, Bode plots, and state-space models."},
+  {question:"What does 'Abstraction' mean in software engineering?",options:["Combining all code into one file","Hiding complex implementation details and exposing only the necessary interface","Copying code from one class to another","Testing all edge cases"],answer:"B",explanation:"Abstraction hides internal complexity and exposes only what is necessary. Example: you use a car without knowing engine internals. In programming, interfaces and abstract classes implement abstraction."},
+  {question:"What type of shift operation preserves the sign bit?",options:["Logical Shift","Circular Shift","Arithmetic Shift","Barrel Shift"],answer:"C",explanation:"Arithmetic shift preserves the sign bit (MSB) when shifting right, ensuring signed numbers maintain their sign. Logical shift fills with zeros regardless. Used for signed number multiplication/division by powers of 2."},
+  {question:"How many bits does a standard hexadecimal digit represent?",options:["2 bits","4 bits (1 nibble)","8 bits","16 bits"],answer:"B",explanation:"One hexadecimal digit (0-9, A-F) represents exactly 4 binary bits (a nibble). Therefore 2 hex digits = 1 byte (8 bits). Example: 0xF = 1111 in binary."},
+  {question:"What are the benefits of IoT in agriculture?",options:["Faster internet browsing","Soil moisture monitoring, weather tracking, and automated irrigation","Building smarter smartphones","Designing faster processors"],answer:"B",explanation:"Agricultural IoT applications include: soil moisture sensors (optimal watering), weather tracking stations (frost/drought alerts), GPS-guided equipment, pest detection, and automated irrigation systems."},
+  {question:"In software testing, what is Integration Testing?",options:["Testing individual functions in isolation","Testing user acceptance before go-live","Testing that different modules work together correctly","Load testing under stress"],answer:"C",explanation:"Integration Testing verifies that different modules or components work correctly together. After unit testing individual parts, integration testing checks their interactions and data exchange between modules."},
+  {question:"What is the Register Transfer notation R1 ← M[R2] mean?",options:["Copy R1 into register at address R2","Load into R1 the data stored in memory at the address contained in R2","Add R1 and R2","Store R2 into memory location R1"],answer:"B",explanation:"M[R2] means 'the memory location whose address is in R2'. So R1 ← M[R2] means: go to memory address stored in R2, get the data there, and store it in R1. This is Indirect/Register Indirect addressing."},
+  {question:"Which SDLC methodology combines development and operations for continuous delivery?",options:["Waterfall","Scrum","DevOps","Spiral Model"],answer:"C",explanation:"DevOps bridges the gap between Development and Operations teams. It promotes continuous integration (CI), continuous delivery (CD), automation of testing/deployment, and rapid feedback cycles."},
+  {question:"What is the purpose of a Package Diagram in UML?",options:["To show runtime object interactions","To show database table structures","To organize and show dependencies between packages/modules","To model user interface flows"],answer:"C",explanation:"UML Package Diagrams show how code/system elements are organized into packages (namespaces/modules) and the dependencies between them — using <<merge>>, <<use>>, <<access>>, and <<import>> relationships."},
+  {question:"Which MATLAB command solves the matrix equation Ax = b?",options:["x = A * b","x = A / b","x = A \\ b","x = inv(A) + b"],answer:"C",explanation:"In MATLAB, the backslash (\\) operator solves the linear system Ax = b efficiently. Example: x = A\\b. It uses numerically stable methods like LU decomposition."},
+  {question:"What is the Accumulator (ACC) register used for?",options:["Holding the address of the next instruction","Pointing to the top of the stack","Storing intermediate arithmetic/logic results from ALU operations","Holding the current instruction being decoded"],answer:"C",explanation:"The Accumulator (ACC) is a general-purpose register that temporarily stores the results of ALU computations. Many processors implicitly use the ACC as source and destination for arithmetic operations."},
+  {question:"Which of the following is NOT a benefit of IoT?",options:["Real-time monitoring","Increased automation","Guaranteed 100% security","Cost reduction through efficiency"],answer:"C",explanation:"IoT offers many benefits (automation, real-time monitoring, cost reduction, improved decisions) but does NOT guarantee 100% security — in fact, security vulnerabilities are one of the KEY CHALLENGES of IoT deployment."},
+  {question:"What type of OS memory management uses disk space to extend available RAM?",options:["Cache memory","Register allocation","Paging only","Virtual memory"],answer:"D",explanation:"Virtual Memory uses hard disk space as an extension of RAM. When RAM is full, the OS swaps inactive memory pages to disk. This allows running programs larger than physical RAM, though at slower speeds."},
+  {question:"In the context of software architecture, what is a 'Client-Server Model'?",options:["A model where all code runs on one machine","A distributed model where clients request resources from centralized servers","A peer-to-peer network with no central server","A batch processing system"],answer:"B",explanation:"Client-Server Model: clients (browsers, apps) send requests to servers (web servers, databases) which process and respond. This is the fundamental architecture of the Internet — every website uses client-server model."},
+  {question:"What is the binary representation of decimal 25?",options:["10011","11001","10101","11000"],answer:"B",explanation:"25 in binary: 25÷2=12r1, 12÷2=6r0, 6÷2=3r0, 3÷2=1r1, 1÷2=0r1. Reading remainders bottom-up: 11001. Verify: 16+8+0+0+1=25. ✓"},
+  {question:"Which UML diagram shows interactions between objects OVER TIME showing the sequence of messages?",options:["Class Diagram","Package Diagram","Use Case Diagram","Sequence Diagram"],answer:"D",explanation:"Sequence diagrams capture how objects interact over time — showing the chronological sequence of messages/calls exchanged between participants (actors, objects, components)."},
+  {question:"What is the purpose of a Firewall in cybersecurity?",options:["To encrypt stored data","To filter incoming and outgoing network traffic based on rules","To detect viruses in files","To authenticate user passwords"],answer:"B",explanation:"A Firewall monitors and controls network traffic based on predefined security rules. It acts as a barrier between trusted internal networks and untrusted external networks, blocking unauthorized access while allowing legitimate traffic."},
+  {question:"What property makes cache memory useful in computer performance optimization?",options:["Cache is cheaper than RAM","Cache stores the operating system kernel permanently","Cache exploits temporal locality — recently accessed data is likely to be accessed again soon","Cache is connected directly to the hard disk"],answer:"C",explanation:"Cache exploits temporal locality (recently used data will likely be used again) and spatial locality (nearby data will likely be accessed soon). By storing frequently accessed data close to the CPU, cache dramatically reduces average memory access time."},
+];
+
+/* ============================================================
+   QUIZ ENGINE VARIABLES
+   ============================================================ */
+let quizQuestions = [];
+let currentQ = 0;
+let userAnswers = [];
+let timerInterval;
+let timeLeft = 1200; // 20 minutes
+
+/* Fisher-Yates shuffle */
+function shuffle(arr) {
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  // Prepare 30 random questions
+  quizQuestions = shuffle(questionBank).slice(0,30).map(q=>{
+    // Shuffle options and track correct answer letter
+    const letters=['A','B','C','D'];
+    const optWithLetter = q.options.map((o,i)=>({text:o, origLetter:letters[i]}));
+    const shuffled = shuffle(optWithLetter);
+    const newAnswerIdx = shuffled.findIndex(o=>o.origLetter===q.answer);
+    return {
+      ...q,
+      shuffledOptions: shuffled.map(o=>o.text),
+      shuffledAnswer: letters[newAnswerIdx]
+    };
+  });
+  userAnswers = new Array(30).fill(null);
+  currentQ = 0;
+  timeLeft = 1200;
+
+  document.getElementById('quiz-start').style.display='none';
+  document.getElementById('quiz-results').style.display='none';
+  document.getElementById('quiz-engine').style.display='block';
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(tickTimer, 1000);
+  renderQuestion();
+}
+
+function tickTimer() {
+  timeLeft--;
+  const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const s = (timeLeft%60).toString().padStart(2,'0');
+  const el = document.getElementById('timerDisplay');
+  el.textContent=`${m}:${s}`;
+  el.className='timer'+(timeLeft<=120?' warning':'');
+  if(timeLeft<=0){clearInterval(timerInterval);submitQuiz();}
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentQ];
+  document.getElementById('qNum').textContent=`Q${currentQ+1} / 30`;
+  document.getElementById('qProgressText').textContent=`Question ${currentQ+1} of 30`;
+  document.getElementById('progressBar').style.width=`${((currentQ+1)/30)*100}%`;
+  document.getElementById('qText').textContent=q.question;
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.shuffledOptions.forEach((opt,i)=>{
+    const div=document.createElement('div');
+    div.className='option';
+    if(userAnswers[currentQ]===letters[i]) div.classList.add('selected');
+    div.innerHTML=`<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    div.onclick=()=>selectOption(i,letters[i]);
+    container.appendChild(div);
+  });
+  document.getElementById('prevBtn').disabled=currentQ===0;
+}
+
+function selectOption(idx, letter) {
+  userAnswers[currentQ]=letter;
+  document.querySelectorAll('.option').forEach((el,i)=>{
+    el.classList.remove('selected');
+    if(i===idx) el.classList.add('selected');
+  });
+}
+
+function nextQuestion() {
+  if(currentQ<29){currentQ++;renderQuestion();}
+}
+function prevQuestion() {
+  if(currentQ>0){currentQ--;renderQuestion();}
+}
+
+function confirmSubmit() {
+  const answered = userAnswers.filter(a=>a!==null).length;
+  if(answered<30 && !confirm(`You have answered ${answered}/30 questions. Submit anyway?`)) return;
+  submitQuiz();
+}
+
+function submitQuiz() {
+  clearInterval(timerInterval);
+  let score=0;
+  const letters=['A','B','C','D'];
+
+  // Calculate score
+  quizQuestions.forEach((q,i)=>{
+    if(userAnswers[i]===q.shuffledAnswer) score++;
+  });
+
+  const pct = Math.round((score/30)*100);
+  const ring = document.getElementById('scoreRing');
+  ring.style.setProperty('--pct', `${pct*3.6}deg`);
+  document.getElementById('scoreNum').textContent=`${score}/30`;
+  document.getElementById('scoreDenom').textContent=`${pct}%`;
+
+  let perf,msg,color;
+  if(pct>=90){perf='🏆 Excellent!';msg='Outstanding performance! You have a strong command of GET 211 concepts. Keep it up!';color='var(--green)';}
+  else if(pct>=70){perf='👍 Good';msg='Great work! You understand most of the material. A bit more review will get you to excellent.';color='var(--accent)';}
+  else if(pct>=50){perf='📖 Needs Improvement';msg='You have a basic understanding but there are gaps. Review the notes section and try again.';color='var(--yellow)';}
+  else{perf='⚠️ Revise the Notes';msg='You need to revisit the study materials. Start with the Key Concept Notes and Revision Cards before retaking the quiz.';color='var(--red)';}
+
+  const badge=document.getElementById('perfBadge');
+  badge.textContent=perf;
+  badge.style.cssText=`background:${color}20;color:${color};border:1px solid ${color}50`;
+  document.getElementById('perfMsg').textContent=msg;
+
+  // Review answers
+  const review=document.getElementById('resultsReview');
+  review.innerHTML='';
+  quizQuestions.forEach((q,i)=>{
+    const userAns=userAnswers[i];
+    const correct=q.shuffledAnswer;
+    const isRight=userAns===correct;
+    const userOptText=userAns?q.shuffledOptions[letters.indexOf(userAns)]:'Not answered';
+    const correctOptText=q.shuffledOptions[letters.indexOf(correct)];
+
+    const div=document.createElement('div');
+    div.className='result-item';
+    div.style.borderLeftColor=isRight?'var(--green)':'var(--red)';
+    div.style.borderLeftWidth='3px';
+    div.innerHTML=`
+      <div class="r-q">${i+1}. ${q.question}</div>
+      <div class="r-answer-row">
+        <span class="r-chip ${isRight?'user-right':'user-wrong'}">Your answer: ${userAns||'—'} — ${userOptText}</span>
+        ${!isRight?`<span class="r-chip correct-ans">Correct: ${correct} — ${correctOptText}</span>`:''}
+      </div>
+      <div class="r-explanation">💡 ${q.explanation}</div>`;
+    review.appendChild(div);
+  });
+
+  document.getElementById('quiz-engine').style.display='none';
+  document.getElementById('quiz-results').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   INITIALISE
+   ============================================================ */
+renderNotes();
+renderCatFilter();
+renderCards();
+</script>
+</body>
+</html>
